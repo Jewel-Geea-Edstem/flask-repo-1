@@ -18,4 +18,6 @@ ENV FLASK_APP=app:create_app
 EXPOSE 5000
 
 # Run database migrations before starting the app
-CMD ["sh", "-c", "flask db upgrade && gunicorn -b 0.0.0.0:5000 'app:create_app()'"]
+#CMD ["sh", "-c", "flask db upgrade && gunicorn -b 0.0.0.0:5000 'app:create_app()'"] this is working
+
+CMD ["/bin/bash","docker-entrypoint.sh"]
