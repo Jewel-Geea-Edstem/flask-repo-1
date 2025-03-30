@@ -1,4 +1,5 @@
 from flask import blueprints
+
 from db import db
 
 

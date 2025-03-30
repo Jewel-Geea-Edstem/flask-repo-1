@@ -3,8 +3,8 @@ from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError
 
 from db import db
-from models import TagModel, StoreModel, ItemModel
-from schemas import TagSchema, TagAndItemSchema
+from models import ItemModel, StoreModel, TagModel
+from schemas import TagAndItemSchema, TagSchema
 
 blp = Blueprint("Tags", "tags", description="Operations on tags")
 

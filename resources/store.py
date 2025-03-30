@@ -1,11 +1,13 @@
-from sqlite3 import IntegrityError
 import uuid
+from sqlite3 import IntegrityError
+
 from flask import request
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
-from sqlalchemy.exc import SQLAlchemyError, IntegrityError
-from db import db
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+
+from db import db
 from models import StoreModel
 from schemas import StoreSchema
 
@@ -23,16 +25,17 @@ class Store(MethodView):
         store = StoreModel.query.get_or_404(store_id)
         db.session.delete(store)
         db.session.commit()
-        return {"message":"Store deleted"}
+        return {"message": "Store deleted"}
+
 
 @blp.route("/store")
 class StoreList(MethodView):
-    @blp.response(200, StoreSchema(many=True))  
+    @blp.response(200, StoreSchema(many=True))
     def get(self):
-        return StoreModel.query.all() 
+        return StoreModel.query.all()
 
     @blp.arguments(StoreSchema)
-    @blp.response(201, StoreSchema()) 
+    @blp.response(201, StoreSchema())
     def post(self, store_data):
         store = StoreModel(**store_data)
         try:
@@ -46,4 +49,3 @@ class StoreList(MethodView):
         except SQLAlchemyError:
             abort(500, message="An error occurred creating the store.")
         return store
-

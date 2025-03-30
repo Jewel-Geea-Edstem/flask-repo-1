@@ -1,15 +1,16 @@
 import os
-import secrets
 
+import redis
+from dotenv import load_dotenv
 from flask import Flask, jsonify
-from flask_smorest import Api
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
-from db import db
-from blocklist import BLOCKLIST
-import models
-from dotenv import load_dotenv
+from flask_smorest import Api
+from rq import Queue
 
+import models
+from blocklist import BLOCKLIST
+from db import db
 from resources.item import blp as ItemBlueprint
 from resources.store import blp as StoreBlueprint
 from resources.tag import blp as TagBlueprint
@@ -17,10 +18,11 @@ from resources.user import blp as UserBlueprint
 
 
 def create_app(db_url=None):
-
     app = Flask(__name__)
     load_dotenv()
 
+    connection = redis.from_url(os.getenv("REDIS_URL"))
+    app.queue = Queue("emails", connection=connection)
     app.config["PROPAGATE_EXCEPTIONS"] = True
     app.config["API_TITLE"] = "Stores REST API"
     app.config["API_VERSION"] = "v1"
@@ -35,7 +37,7 @@ def create_app(db_url=None):
     )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.init_app(app)
-    migrate = Migrate(app,db)
+    migrate = Migrate(app, db)
     api = Api(app)
 
     app.config["JWT_SECRET_KEY"] = "87936762941928294602182993221512269548"
@@ -107,7 +109,8 @@ def create_app(db_url=None):
 
     return app
 
-#app = create_app()
+
+# app = create_app()
 
 # if __name__ == "__main__":
 #     app.run(debug=True)

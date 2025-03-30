@@ -1,9 +1,10 @@
 from flask.views import MethodView
+from flask_jwt_extended import get_jwt, jwt_required
 from flask_smorest import Blueprint, abort
-from flask_jwt_extended import jwt_required, get_jwt
-from sqlalchemy.exc import SQLAlchemyError
-from db import db
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import SQLAlchemyError
+
+from db import db
 from models import ItemModel
 from schemas import ItemSchema, ItemUpdateSchema
 
@@ -33,7 +34,6 @@ class ItemList(MethodView):
 
 @blp.route("/item/<int:item_id>")
 class Item(MethodView):
-
     @jwt_required()
     @blp.response(200, ItemSchema)
     def get(self, item_id):
@@ -53,7 +53,7 @@ class Item(MethodView):
 
     @blp.arguments(ItemUpdateSchema)
     @blp.response(200, ItemSchema)
-    def put(self, item_data, item_id):
+    def put(self, item_id, item_data):
         item = ItemModel.query.get(item_id)
         if item:
             item.price = item_data.get("price", item.price)
